@@ -1,79 +1,90 @@
 # 💊 Pharmacy Management System — Backend
 
-A Java Spring Boot REST API backend for a Pharmacy Management System. The application manages medicines, customers, sales, inventory stock, user login, and pharmacy dashboard information using a MySQL relational database.
+A Java Spring Boot REST API backend developed for a Pharmacy Management System. It manages medicine inventory, customer records, sales and billing, user login, and pharmacy dashboard information using a MySQL relational database.
 
 ## 📌 Project Overview
 
-The backend provides REST APIs that connect the React frontend with the MySQL database. It implements business logic for medicine and customer management, sales processing, automatic stock reduction, and low-stock and expired-medicine monitoring.
+The backend connects the React.js frontend with the MySQL database through REST APIs. It implements business logic for medicine and customer management, sales processing, automatic stock reduction after successful sales, and monitoring of low-stock and expired medicines.
+
+The application follows a layered architecture using controllers, services, repositories, and entity classes.
 
 ## 🛠️ Technologies Used
 
 - **Java** — Backend programming language
 - **Spring Boot** — Backend application framework
-- **Spring Data JPA / Hibernate** — Database persistence and ORM
+- **Spring Data JPA** — Database interaction and persistence
+- **Hibernate** — Object-relational mapping (ORM)
 - **MySQL** — Relational database
 - **Maven** — Dependency management and build tool
 - **REST APIs** — Communication between frontend and backend
 - **Postman** — API testing
+- **Visual Studio Code** — Development environment
 
-## ✨ Features
+## ✨ Features Implemented
 
 ### 💊 Medicine Management
-- Add new medicines
-- Retrieve all medicines or a medicine by ID
-- Update medicine details
-- Delete medicines
-- Track medicine name, category, batch number, manufacturer, price, quantity, and expiry date
-- Retrieve low-stock medicines
-- Retrieve expired medicines
+- Add, view, update, and delete medicines.
+- Retrieve a medicine by its ID.
+- Store medicine name, category, batch number, manufacturer, price, quantity, and expiry date.
+- Retrieve medicines with low stock.
+- Identify expired medicines.
 
 ### 👥 Customer Management
-- Add customer records
-- Retrieve customer information
-- Update customer details
-- Delete customer records
+- Add new customer records.
+- Retrieve all customers or a customer by ID.
+- Update customer details.
+- Delete customer records.
+- Maintain customer names, phone numbers, email addresses, and addresses.
 
 ### 🧾 Sales and Billing
-- Create sales associated with customers
-- Store individual sale items
-- Calculate the total sale amount
-- Automatically reduce medicine stock after a successful sale
-- Retrieve sales history and sale items
+- Create sales associated with customers.
+- Store individual items included in each sale.
+- Calculate the total sale amount.
+- Reduce medicine stock after a successful sale.
+- Retrieve sales history.
+- Retrieve sale details and associated sale items.
 
 ### 📊 Dashboard
-Provides summary information, including:
-- Total medicines
-- Total customers
-- Total sales
-- Low-stock medicine count
-- Expired-medicine count
+Provides summary information for the frontend dashboard, including:
+- Total medicines.
+- Total customers.
+- Total sales.
+- Low-stock medicine count.
+- Expired-medicine count.
 
 ### 🔐 User Management
-- User registration
-- Login endpoint for credential verification
+- User registration endpoint.
+- Login endpoint for credential verification.
+- Integration with the frontend login form.
 
-### ⚠️ Inventory Alerts
-- Identify medicines with low stock
-- Identify medicines past their expiry date
+### ⚠️ Inventory Monitoring
+- Retrieve medicines with low stock.
+- Retrieve expired medicines.
+- Provide inventory information for dashboard alerts.
 
 ## 🏗️ Backend Architecture
 
-The application follows a layered architecture:
+The backend follows a layered architecture.
 
 ```text
-React Frontend
-      |
-      | HTTP / REST API
-      v
+React.js Frontend
+        |
+        | HTTP Requests / REST APIs
+        v
 Spring Boot Controllers
-      |
-      v
+        |
+        v
 Service Layer
-      |
-      v
+(Business Logic)
+        |
+        v
 Repository Layer
-      |
-      v
+(Spring Data JPA)
+        |
+        v
+Hibernate ORM
+        |
+        v
 MySQL Database
 ```
 
@@ -97,33 +108,39 @@ src/main/java/com/pharmacy/pharmacybackend/
 ├── exception/
 │   └── GlobalExceptionHandler.java
 ├── repository/
+│   ├── MedicineRepository.java
+│   ├── CustomerRepository.java
+│   ├── SaleRepository.java
+│   ├── SaleItemRepository.java
+│   └── UserRepository.java
 ├── service/
+│   ├── MedicineService.java
+│   ├── CustomerService.java
+│   ├── SaleService.java
+│   ├── UserService.java
+│   └── DashboardService.java
 └── PharmacyBackendApplication.java
 ```
 
-## 🗄️ Database
+## 🗄️ Database Design
 
 **Database name:** `pharmacy_management_db`
 
-The main tables are:
+The application uses the following main tables:
 
 | Table | Purpose |
 |---|---|
 | `users` | Stores user account records |
-| `medicines` | Stores medicine and inventory information |
-| `customers` | Stores customer details |
-| `sales` | Stores sale records and totals |
-| `sale_items` | Stores medicines included in each sale |
+| `medicines` | Stores medicine and inventory details |
+| `customers` | Stores customer information |
+| `sales` | Stores completed sales and totals |
+| `sale_items` | Stores individual medicines included in each sale |
 
-The sales and sale-items tables use relationships to associate sales with customers and medicines.
+The database relationships associate sales with customers and sale items with sales and medicines.
 
 ## 🔌 REST API Endpoints
 
-Base URL:
-
-```text
-http://localhost:8080/api
-```
+**Base URL:** `http://localhost:8080/api`
 
 ### Medicine APIs
 
@@ -166,13 +183,14 @@ http://localhost:8080/api
 
 ## ⚙️ Prerequisites
 
-Install the following software before running the backend:
+Install the following software:
 
 - Java Development Kit (JDK)
 - MySQL Server
 - Git
-- Maven, or use the included Maven Wrapper
+- Maven or the included Maven Wrapper
 - Postman (optional, for API testing)
+- Visual Studio Code (or another Java IDE)
 
 ## 🚀 Setup and Installation
 
@@ -185,15 +203,15 @@ git clone https://github.com/YOUR_USERNAME/pharmacy-management-backend.git
 cd pharmacy-management-backend
 ```
 
-### 2. Create the database
+### 2. Configure MySQL
 
-Open MySQL and execute:
+Start MySQL Server and create the database:
 
 ```sql
 CREATE DATABASE pharmacy_management_db;
 ```
 
-The required tables must also be created according to the project's database schema.
+Ensure the required tables and relationships exist. The current configuration uses `spring.jpa.hibernate.ddl-auto=none`, so Hibernate will not automatically create the tables.
 
 ### 3. Configure the database connection
 
@@ -203,7 +221,7 @@ Open:
 src/main/resources/application.properties
 ```
 
-Configure your local MySQL connection:
+Configure your local database connection:
 
 ```properties
 spring.application.name=pharmacy-backend
@@ -219,33 +237,31 @@ spring.jpa.properties.hibernate.format_sql=true
 server.port=8080
 ```
 
-Set `DB_USERNAME` and `DB_PASSWORD` in your local environment before running the application. Never commit real database credentials to GitHub.
+Set `DB_USERNAME` and `DB_PASSWORD` in your local environment before starting the application. Never publish real database credentials on GitHub.
 
-**Database note:** `spring.jpa.hibernate.ddl-auto=none` means Hibernate will not automatically create the tables. Ensure the required schema exists before starting the application.
+Use the database settings that match your local MySQL configuration.
 
 ### 4. Run the backend
 
-On Windows PowerShell or CMD, from the backend project directory:
+On Windows PowerShell or Command Prompt, from the backend project directory, run:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-If the Maven Wrapper is unavailable, use an installed Maven version:
+If the Maven Wrapper is unavailable and Maven is installed, run:
 
 ```bash
 mvn spring-boot:run
 ```
 
-Wait for the application to start on port `8080`.
+Wait for Spring Boot to start on port `8080`.
 
 ### 5. Verify the application
 
-Open:
+Open the following URL in your browser:
 
-```text
-http://localhost:8080/
-```
+`http://localhost:8080/`
 
 The root endpoint should return:
 
@@ -253,63 +269,76 @@ The root endpoint should return:
 Pharmacy Management System Backend is Running!
 ```
 
-Test an API in your browser or Postman:
+You can also test the medicine API using a browser or Postman:
 
-```text
+```http
 GET http://localhost:8080/api/medicines
 ```
 
 ## 🧪 API Testing
 
-Postman can be used to test the REST APIs independently of the frontend.
+Postman can be used to test the backend independently of the frontend.
 
-Recommended tests:
-- Retrieve all medicines
-- Retrieve a medicine by ID
-- Add, update, and delete a medicine
-- Retrieve customers
-- Create a sale and verify stock reduction
-- Retrieve sales history
-- Check low-stock and expired-medicine endpoints
-- Retrieve dashboard statistics
-- Test valid and invalid login credentials
+Recommended tests include:
+
+- Retrieve all medicines.
+- Retrieve a medicine by ID.
+- Add, update, and delete medicine records.
+- Retrieve customer records.
+- Create a sale and verify medicine stock reduction.
+- Retrieve sales history and sale items.
+- Test low-stock and expired-medicine endpoints.
+- Retrieve dashboard statistics.
+- Test valid and invalid login credentials.
+
+The medicine retrieval endpoints were tested during development. Additional endpoints should be tested individually before production deployment.
 
 ## 🔗 Frontend Integration
 
-The backend is designed to work with the React frontend.
+The backend integrates with the React.js frontend through Axios.
 
-The frontend communicates with the backend using Axios and the following base URL during local development:
+The local frontend API configuration uses:
 
 ```text
 http://localhost:8080/api
 ```
 
-The React frontend and Spring Boot backend must both be running for the complete application to work locally.
+The frontend and backend run separately during local development. MySQL must also be running for database operations to work.
+
+**Related project:** Pharmacy Management System — Frontend (React.js, JavaScript JSX, Vite, and Axios).
 
 ## 🔒 Security Notes
 
-- Keep database passwords and other credentials outside version control.
-- Do not commit `.env` files containing secrets.
-- The current login implementation should not be considered production-grade authentication.
-- For production deployment, use password hashing, Spring Security, appropriate authorization, and secure session or token management.
-- Configure HTTPS and restrict database access when deploying the application.
+- Never commit database passwords, API keys, or other secrets to GitHub.
+- The current login implementation is basic and should not be considered production-grade authentication.
+- Use password hashing and Spring Security for production authentication.
+- Implement appropriate authorization and secure session or token management.
+- Use HTTPS and restrict database access when deploying the application.
 
 ## 🔮 Future Enhancements
 
-- Spring Security and role-based access control
-- Secure password hashing
-- PDF invoice generation
-- Advanced sales reports and analytics
-- Automated notifications for low stock and expiry
-- Deployment to a cloud platform
+- Spring Security integration.
+- Secure password hashing.
+- Role-based access control for administrators and pharmacists.
+- PDF invoice generation.
+- Advanced sales reports and analytics.
+- Automated low-stock and expiry notifications.
+- Cloud deployment.
+
+## 🎯 Project Objective
+
+The objective of this backend is to simplify pharmacy operations by providing reliable APIs for managing medicine inventory, customer information, sales, billing, and stock monitoring.
 
 ## 👨‍💻 Project Information
 
 **Project:** Pharmacy Management System  
-**Backend:** Java Spring Boot  
+**Project Type:** Java Full Stack Web Application  
+**Backend:** Java and Spring Boot  
+**Persistence:** Spring Data JPA and Hibernate  
 **Database:** MySQL  
-**API Style:** REST
+**API Style:** REST APIs  
+**Build Tool:** Maven
 
 ---
 
-*Developed as a full-stack pharmacy management project to simplify medicine inventory, customer records, sales processing, and stock monitoring.*
+*Developed as the backend component of a Pharmacy Management System to improve the organization and efficiency of pharmacy inventory and sales operations.*
